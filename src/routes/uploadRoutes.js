@@ -18,7 +18,7 @@ cloudinary.config({
 const storage = new CloudinaryStorage({
   cloudinary: cloudinary,
   params: {
-    folder: 'aaagain_products',
+    folder: 'bazarbeats_products',
     allowed_formats: ['jpg', 'jpeg', 'png', 'webp', 'gif'],
     transformation: [{ width: 1200, crop: 'limit' }],
   },

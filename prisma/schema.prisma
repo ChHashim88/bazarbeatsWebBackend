@@ -129,7 +129,7 @@ model StoreSettings {
   easypaisaNumber     String   @default("0333-1234567")
   enableJazzcash      Boolean  @default(true)
   jazzcashNumber      String   @default("0300-7654321")
-  emailSupport        String   @default("support@aaagain.com")
+  emailSupport        String   @default("support@bazarbeats.com")
   directLine          String   @default("+1 (800) 555-0199")
   headquarters        String   @default("Neon District")
   headquartersAddress String   @default("Cyber City, CC 92041, Sector 7.")

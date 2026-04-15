@@ -6,7 +6,7 @@ async function main() {
   const nonAdmins = await prisma.user.findMany({
     where: {
       email: {
-        not: 'admin@aaagain.com'
+        not: 'admin@bazarbeats.com'
       }
     },
     select: { id: true }

@@ -13,7 +13,7 @@ const transporter = nodemailer.createTransport({
 export const sendOrderConfirmationEmail = async (userEmail, userName, order) => {
   try {
     const mailOptions = {
-      from: `"Aaagain Futuristic Footwear" <${process.env.EMAIL_USER}>`,
+      from: `"Bazar Beats Futuristic Footwear" <${process.env.EMAIL_USER}>`,
       to: userEmail,
       subject: `Order Confirmation - ${order.id}`,
       html: `
@@ -61,7 +61,7 @@ export const sendOrderConfirmationEmail = async (userEmail, userName, order) => 
           </div>
           
           <p style="margin-top: 30px; color: #aaaaaa;">Step into the future,</p>
-          <p><strong style="color: #22d3ee;">The Aaagain Team</strong></p>
+          <p><strong style="color: #22d3ee;">The Bazar Beats Team</strong></p>
         </div>
       `,
     };
