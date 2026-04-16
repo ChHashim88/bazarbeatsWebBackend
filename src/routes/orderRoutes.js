@@ -5,7 +5,6 @@ import {
   updateOrderStatus,
   getMyOrders,
   getOrders,
-  createPaymentIntent,
   getStats,
   deleteOrder,
   updateOrderPayment,
@@ -16,7 +15,7 @@ import { protect, admin, softProtect } from '../middlewares/authMiddleware.js';
 
 const router = express.Router();
 
-router.route('/payment-intent').post(createPaymentIntent);
+
 router.route('/physical').post(protect, admin, registerPhysicalSale);
 router.route('/stats').get(protect, admin, getStats);
 router.route('/').post(softProtect, addOrderItems).get(protect, admin, getOrders);

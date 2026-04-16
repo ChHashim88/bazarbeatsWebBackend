@@ -2,8 +2,6 @@ import prisma from '../config/db.js';
 import asyncHandler from 'express-async-handler';
 import { z } from 'zod';
 import { sendOrderConfirmationEmail } from '../services/emailService.js';
-import { createPaymentIntent as stripeCreateIntent } from '../services/stripeService.js';
-
 const orderSchema = z.object({
   orderItems: z.array(z.object({
     productId: z.string(),
@@ -24,20 +22,6 @@ const orderSchema = z.object({
   totalPrice: z.number()
 });
 
-// @desc    Create Payment Intent
-// @route   POST /api/orders/payment-intent
-// @access  Private
-export const createPaymentIntent = asyncHandler(async (req, res) => {
-  const { totalPrice } = req.body;
-  if (!totalPrice || totalPrice <= 0) {
-    res.status(400);
-    throw new Error('Invalid total price');
-  }
-
-  // Create a PaymentIntent with the final total
-  const paymentIntent = await stripeCreateIntent(totalPrice);
-  res.json({ clientSecret: paymentIntent.client_secret });
-});
 
 // @desc    Create new order
 // @route   POST /api/orders
