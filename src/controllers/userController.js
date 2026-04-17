@@ -9,12 +9,15 @@ const asyncWrapper = (fn) => (req, res, next) => fn(req, res, next).catch(next);
 // @route   POST /api/users/login
 // @access  Public
 export const authUser = asyncWrapper(async (req, res) => {
+  console.log("LOGIN HIT");
   const errors = validationResult(req);
   if (!errors.isEmpty()) return res.status(400).json({ errors: errors.array() });
 
   const { email, password } = req.body;
 
+  console.log("Before DB");
   const user = await prisma.user.findUnique({ where: { email } });
+  console.log("After DB");
 
   if (user && (await bcrypt.compare(password, user.password))) {
     res.json({
