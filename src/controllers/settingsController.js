@@ -24,6 +24,7 @@ export const updateSettings = asyncWrapper(async (req, res) => {
     codFeeType, codFeeValue, sizeSystem,
     enableEasypaisa, easypaisaNumber,
     enableJazzcash, jazzcashNumber,
+    enableCod, enableBank, bankName, bankAccountNumber,
     emailSupport, directLine, headquarters, headquartersAddress
   } = req.body;
 
@@ -44,6 +45,10 @@ export const updateSettings = asyncWrapper(async (req, res) => {
       easypaisaNumber: easypaisaNumber || settings.easypaisaNumber,
       enableJazzcash: enableJazzcash !== undefined ? enableJazzcash : settings.enableJazzcash,
       jazzcashNumber: jazzcashNumber || settings.jazzcashNumber,
+      enableCod: enableCod !== undefined ? enableCod : settings.enableCod,
+      enableBank: enableBank !== undefined ? enableBank : settings.enableBank,
+      bankName: bankName || settings.bankName,
+      bankAccountNumber: bankAccountNumber || settings.bankAccountNumber,
       emailSupport: emailSupport || settings.emailSupport,
       directLine: directLine || settings.directLine,
       headquarters: headquarters || settings.headquarters,
