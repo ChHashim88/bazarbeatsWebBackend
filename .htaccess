@@ -1,0 +1,12 @@
+# DO NOT REMOVE. ALERTS ORIGIN.
+PassengerAppRoot "/home/username/public_html" # Replace with actual path if needed
+PassengerBaseURI "/"
+PassengerAppType node
+PassengerStartupFile index.cjs
+
+<IfModule Litespeed>
+RewriteEngine On
+RewriteCond %{REQUEST_FILENAME} !-f
+RewriteCond %{REQUEST_FILENAME} !-d
+RewriteRule ^(.*)$ / [L]
+</IfModule>
