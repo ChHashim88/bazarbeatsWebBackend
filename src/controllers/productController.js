@@ -6,9 +6,18 @@ const asyncWrapper = (fn) => (req, res, next) => fn(req, res, next).catch(next);
 // @route   GET /api/products
 // @access  Public
 export const getProducts = asyncWrapper(async (req, res) => {
+  const settings = await prisma.storeSettings.findFirst();
+  const sortSetting = settings?.defaultSortOption || 'newest';
+  
+  let orderObj = { createdAt: 'desc' };
+  if (sortSetting === 'oldest') orderObj = { createdAt: 'asc' };
+  else if (sortSetting === 'price_asc') orderObj = { price: 'asc' };
+  else if (sortSetting === 'price_desc') orderObj = { price: 'desc' };
+  else if (sortSetting === 'name_asc') orderObj = { name: 'asc' };
+
   const products = await prisma.product.findMany({
     include: { category: true },
-    orderBy: { createdAt: 'desc' }
+    orderBy: orderObj
   });
   res.json(products);
 });

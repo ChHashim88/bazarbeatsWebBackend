@@ -25,7 +25,8 @@ export const updateSettings = asyncWrapper(async (req, res) => {
     enableEasypaisa, easypaisaNumber,
     enableJazzcash, jazzcashNumber,
     enableCod, enableBank, bankName, bankAccountNumber,
-    emailSupport, directLine, headquarters, headquartersAddress
+    emailSupport, directLine, headquarters, headquartersAddress,
+    defaultSortOption
   } = req.body;
 
   let settings = await prisma.storeSettings.findFirst();
@@ -53,6 +54,7 @@ export const updateSettings = asyncWrapper(async (req, res) => {
       directLine: directLine || settings.directLine,
       headquarters: headquarters || settings.headquarters,
       headquartersAddress: headquartersAddress || settings.headquartersAddress,
+      defaultSortOption: defaultSortOption || settings.defaultSortOption,
     }
   });
 
