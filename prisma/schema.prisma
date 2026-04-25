@@ -137,6 +137,7 @@ model StoreSettings {
   directLine          String   @default("+1 (800) 555-0199")
   headquarters        String   @default("Neon District")
   headquartersAddress String   @default("Cyber City, CC 92041, Sector 7.")
+  defaultSortOption   String   @default("newest")
   updatedAt           DateTime @updatedAt
 }
 
