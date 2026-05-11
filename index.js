@@ -1,9 +1,16 @@
 import express from 'express';
 import cors from 'cors';
-import path from 'path';
-import { fileURLToPath } from 'url';
 
-// Route Imports from src
+const app = express();
+app.use(cors());
+app.use(express.json());
+
+// Absolute basic test route
+app.get('/', (req, res) => {
+  res.send('<h1>BazarBeats API is Online</h1><p>If you see this, the server is working perfectly.</p>');
+});
+
+// Import the rest of the app logic from src
 import userRoutes from './src/routes/userRoutes.js';
 import productRoutes from './src/routes/productRoutes.js';
 import categoryRoutes from './src/routes/categoryRoutes.js';
@@ -16,13 +23,6 @@ import messageRoutes from './src/routes/messageRoutes.js';
 import { notFound, errorHandler } from './src/middlewares/errorMiddleware.js';
 import { connectDB } from './src/config/db.js';
 
-const app = express();
-
-// Middlewares
-app.use(express.json());
-app.use(express.urlencoded({ extended: true }));
-app.use(cors({ origin: '*', credentials: true }));
-
 // API Routes
 app.use('/api/users', userRoutes);
 app.use('/api/products', productRoutes);
@@ -34,27 +34,11 @@ app.use('/api/settings', settingsRoutes);
 app.use('/api/brands', brandRoutes);
 app.use('/api/messages', messageRoutes);
 
-// Static Uploads
-const _root = path.resolve();
-app.use('/uploads', express.static(path.join(_root, '/uploads')));
-
-// Diagnostics
-app.get('/health', async (req, res) => {
-  const isConnected = await connectDB();
-  res.status(200).json({ status: 'ONLINE', database: isConnected ? 'CONNECTED' : 'FAILED' });
-});
-
-app.get('/', (req, res) => {
-  res.json({ message: 'BazarBeats API', status: 'Ready', port: process.env.PORT || 3000 });
-});
-
-// Error Handling
 app.use(notFound);
 app.use(errorHandler);
 
-// Listen on Hostinger-provided port
-const PORT = process.env.PORT || 3000;
+const PORT = process.env.PORT || 8080;
 app.listen(PORT, () => {
-  console.log(`✔ Server live on port ${PORT}`);
-  connectDB();
+  console.log('Server started on port', PORT);
+  connectDB().catch(err => console.log('DB Delayed Connect:', err.message));
 });
