@@ -89,11 +89,20 @@ app.use('/uploads', express.static(path.join(_dirname, '/uploads')));
 
 // Health Check Route
 app.get('/health', (req, res) => {
-  res.status(200).json({ status: 'OK', uptime: process.uptime() });
+  res.status(200).json({ 
+    status: 'OK', 
+    uptime: process.uptime(),
+    db: 'checking...' 
+  });
 });
 
 app.get('/', (req, res) => {
-  res.send('API is running...');
+  res.json({
+    message: 'BazarBeats API is live',
+    version: '1.1.0',
+    env: process.env.NODE_ENV,
+    port: process.env.PORT || 5000
+  });
 });
 
 // Error Handling Middlewares
