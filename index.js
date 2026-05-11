@@ -37,17 +37,25 @@ app.use('/api/messages', messageRoutes);
 app.use(notFound);
 app.use(errorHandler);
 
+let globalDbStatus = 'Connecting...';
+
+app.get('/', (req, res) => {
+  res.send(`
+    <h1>BazarBeats API Status</h1>
+    <p><b>Server:</b> Online ✔</p>
+    <p><b>Database:</b> ${globalDbStatus}</p>
+    <hr>
+    <p>If Database stays "Connecting..." for 30s, check your MongoDB Whitelist.</p>
+  `);
+});
+
 const PORT = process.env.PORT || 3000;
 app.listen(PORT, () => {
   console.log('✔ Server started on port', PORT);
   
-  // Re-enabling DB connection in the background (SILENT FAIL MODE)
-  // This ensures the website stays UP even if the DB is slow to connect
   setTimeout(() => {
-    console.log('--- Attempting Background DB Connection ---');
     connectDB().then(success => {
-      if (success) console.log('✔ DB Connection fully established');
-      else console.log('⚠ DB Connection failed, but server is still alive');
-    }).catch(err => console.log('✘ DB Error:', err.message));
-  }, 2000);
+      globalDbStatus = success ? 'CONNECTED ✔' : 'FAILED ✘';
+    });
+  }, 1000);
 });
