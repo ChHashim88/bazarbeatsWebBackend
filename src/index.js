@@ -119,14 +119,20 @@ app.get('/', (req, res) => {
 app.use(notFound);
 app.use(errorHandler);
 
-const PORT = process.env.PORT || 5000;
+const PORT = process.env.PORT || 3000;
 
 // Start server immediately
-app.listen(PORT, () => {
+const server = app.listen(PORT, () => {
   console.log(`✔ Server running in ${process.env.NODE_ENV} mode on port ${PORT}`);
   
-  // Connect to Database in the background
-  connectDB().catch(err => {
-    console.error('✘ Delayed MongoDB Connection Error:', err.message);
-  });
+  // Isolated Database Connection
+  setTimeout(() => {
+    connectDB().catch(err => {
+      console.error('✘ Background MongoDB Error:', err.message);
+    });
+  }, 1000);
 });
+
+// Handle graceful shutdowns
+process.on('SIGTERM', () => server.close(() => process.exit(0)));
+process.on('SIGINT', () => server.close(() => process.exit(0)));
