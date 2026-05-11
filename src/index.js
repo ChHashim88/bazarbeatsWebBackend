@@ -19,8 +19,20 @@ import { fileURLToPath } from 'url';
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
-// Explicitly load the .env from the backend root folder
-dotenv.config({ path: path.resolve(__dirname, '../.env') });
+// --- STABILITY BOOTSTRAP ---
+console.log("Environment Check:", {
+  NODE_ENV: process.env.NODE_ENV,
+  HAS_DB_URL: !!process.env.DATABASE_URL,
+  PORT: process.env.PORT
+});
+
+// Load .env only if not already provided by Hostinger Dashboard
+if (!process.env.DATABASE_URL) {
+  console.log("Loading variables from local .env file...");
+  dotenv.config({ path: path.resolve(__dirname, '../.env') });
+} else {
+  console.log("Using Hostinger Dashboard environment variables.");
+}
 
 // --- STABILITY BOILERPLATE ---
 // 1. Validate Critical Environment Variables
