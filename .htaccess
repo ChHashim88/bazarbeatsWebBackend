@@ -1,10 +1,8 @@
 # Hostinger / Phusion Passenger Configuration
 # ---------------------------------------------------------
-# IMPORTANT: Replace 'username' in the path below with your actual 
-# Hostinger username (e.g., u123456789). 
-# You can find this in your Hostinger Panel under 'Hosting Details'.
+# Automatically updated with your actual server path
 
-PassengerAppRoot "/home/username/public_html"
+PassengerAppRoot "/home/u397983207/domains/api.bazarbeats.com/nodejs"
 PassengerBaseURI "/"
 PassengerAppType node
 PassengerStartupFile index.cjs
@@ -12,9 +10,6 @@ PassengerStartupFile index.cjs
 # LiteSpeed Specific Rules
 <IfModule Litespeed>
     RewriteEngine On
-    
-    # Redirect all requests to the Node.js application
-    # but ignore actual files and directories (like uploads)
     RewriteCond %{REQUEST_FILENAME} !-f
     RewriteCond %{REQUEST_FILENAME} !-d
     RewriteRule ^(.*)$ / [L]
@@ -23,7 +18,7 @@ PassengerStartupFile index.cjs
 # Security: Disable directory browsing
 Options -Indexes
 
-# Increase timeouts to prevent 'Connection Reset' on long DB queries
+# Increase timeouts
 <IfModule mod_env.c>
     SetEnv MAGICK_THREAD_LIMIT 1
 </IfModule>
