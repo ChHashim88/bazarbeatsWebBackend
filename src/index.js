@@ -87,12 +87,22 @@ app.use('/api/messages', messageRoutes);
 const _dirname = path.resolve();
 app.use('/uploads', express.static(path.join(_dirname, '/uploads')));
 
-// Health Check Route
-app.get('/health', (req, res) => {
+// Deep Health Check Route
+app.get('/health', async (req, res) => {
+  let dbStatus = 'Checking...';
+  try {
+    // Try a simple count query to see if DB is responsive
+    await prisma.user.count();
+    dbStatus = 'Connected ✔';
+  } catch (err) {
+    dbStatus = `Failed: ${err.message}`;
+  }
+
   res.status(200).json({ 
     status: 'OK', 
-    uptime: process.uptime(),
-    db: 'checking...' 
+    uptime: `${Math.floor(process.uptime())}s`,
+    database: dbStatus,
+    timestamp: new Date().toISOString()
   });
 });
 
