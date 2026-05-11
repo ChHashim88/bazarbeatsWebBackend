@@ -40,6 +40,14 @@ app.use(errorHandler);
 const PORT = process.env.PORT || 3000;
 app.listen(PORT, () => {
   console.log('✔ Server started on port', PORT);
-  // Temporarily disabled DB connection to isolate 503 error
-  // connectDB(); 
+  
+  // Re-enabling DB connection in the background (SILENT FAIL MODE)
+  // This ensures the website stays UP even if the DB is slow to connect
+  setTimeout(() => {
+    console.log('--- Attempting Background DB Connection ---');
+    connectDB().then(success => {
+      if (success) console.log('✔ DB Connection fully established');
+      else console.log('⚠ DB Connection failed, but server is still alive');
+    }).catch(err => console.log('✘ DB Error:', err.message));
+  }, 2000);
 });
