@@ -84,11 +84,11 @@ console.log('ENV File Exists:', fs.existsSync(path.join(__dirname, '.env')));
 console.log('ENV PORT:', process.env.PORT);
 console.log('FINAL PORT:', PORT);
 console.log('DATABASE_URL Defined:', !!process.env.DATABASE_URL);
-console.log('NODE_ENV:', process.env.NODE_ENV);
+console.log('Available ENV Keys:', Object.keys(process.env).join(', '));
 console.log('--- DIAGNOSTIC END ---');
 
-const server = app.listen(PORT, () => {
-  console.log(`✔ Server started on port ${PORT}`);
+const server = app.listen(PORT, '0.0.0.0', () => {
+  console.log(`✔ Server started on port ${PORT} (Bound to 0.0.0.0)`);
   
   // Attempt DB Connection
   setTimeout(() => {
@@ -97,6 +97,10 @@ const server = app.listen(PORT, () => {
     });
   }, 1000);
 });
+
+// Optimization for Hostinger/Passenger stability
+server.keepAliveTimeout = 65000;
+server.headersTimeout = 66000;
 
 // Graceful Shutdown
 const shutdown = (signal) => {
