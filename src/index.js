@@ -18,14 +18,6 @@ import brandRoutes from './routes/brandRoutes.js';
 import messageRoutes from './routes/messageRoutes.js';
 import { notFound, errorHandler } from './middlewares/errorMiddleware.js';
 
-const __filename = fileURLToPath(import.meta.url);
-const __dirname = path.dirname(__filename);
-
-// 1. Environment Loading (Dashboard First)
-if (!process.env.DATABASE_URL) {
-  dotenv.config({ path: path.resolve(__dirname, '../.env') });
-}
-
 import { connectDB } from './config/db.js';
 
 const app = express();
