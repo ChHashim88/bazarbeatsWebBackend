@@ -71,6 +71,15 @@ process.on('unhandledRejection', (reason, promise) => {
 
 // 7. Server Boot
 const PORT = process.env.PORT || 3000;
+
+console.log('--- DIAGNOSTIC START ---');
+console.log('Time:', new Date().toISOString());
+console.log('CWD:', process.cwd());
+console.log('ENV PORT:', process.env.PORT);
+console.log('FINAL PORT:', PORT);
+console.log('NODE_ENV:', process.env.NODE_ENV);
+console.log('--- DIAGNOSTIC END ---');
+
 const server = app.listen(PORT, () => {
   console.log(`✔ Server started on port ${PORT}`);
   
