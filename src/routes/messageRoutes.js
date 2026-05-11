@@ -1,9 +1,5 @@
 import express from 'express';
-import { PrismaClient } from '@prisma/client';
-import { protect, admin } from '../middlewares/authMiddleware.js';
-
-const router = express.Router();
-const prisma = new PrismaClient();
+import prisma from '../config/db.js';
 
 // @desc    Submit a new contact message
 // @route   POST /api/messages

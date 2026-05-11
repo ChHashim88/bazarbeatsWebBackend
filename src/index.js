@@ -22,6 +22,32 @@ const __dirname = path.dirname(__filename);
 // Explicitly load the .env from the backend root folder
 dotenv.config({ path: path.resolve(__dirname, '../.env') });
 
+// --- STABILITY BOILERPLATE ---
+// 1. Validate Critical Environment Variables
+const requiredEnvs = ['DATABASE_URL', 'CLOUDINARY_CLOUD_NAME'];
+requiredEnvs.forEach(env => {
+  if (!process.env[env]) {
+    console.error(`FATAL ERROR: ${env} is not defined in .env file.`);
+  }
+});
+
+// 2. Global Error Handlers (Prevents the process from dying silently)
+process.on('uncaughtException', (err) => {
+  console.error('UNCAUGHT EXCEPTION! 💥 Shutting down...');
+  console.error(err.name, err.message, err.stack);
+  // Give the server time to log before exiting
+  setTimeout(() => process.exit(1), 1000);
+});
+
+process.on('unhandledRejection', (err) => {
+  console.error('UNHANDLED REJECTION! 💥 Shutting down...');
+  console.error(err.name, err.message, err.stack);
+  // In production, we might not want to exit for rejections, but logging is vital
+});
+// -----------------------------
+
+import { connectDB } from './config/db.js';
+
 const app = express();
 
 // Middlewares
@@ -44,11 +70,15 @@ app.use('/api/settings', settingsRoutes);
 app.use('/api/brands', brandRoutes);
 app.use('/api/messages', messageRoutes);
 
-// Statically serve the uploads folder for the frontend browser to render
+// Statically serve the uploads folder
 const _dirname = path.resolve();
 app.use('/uploads', express.static(path.join(_dirname, '/uploads')));
 
-// Basic Route for testing
+// Health Check Route
+app.get('/health', (req, res) => {
+  res.status(200).json({ status: 'OK', uptime: process.uptime() });
+});
+
 app.get('/', (req, res) => {
   res.send('API is running...');
 });
@@ -59,6 +89,9 @@ app.use(errorHandler);
 
 const PORT = process.env.PORT || 5000;
 
-app.listen(PORT, '0.0.0.0', () => {
-  console.log(`Server running in ${process.env.NODE_ENV} mode on port ${PORT}`);
+// Connect to Database and then start server
+connectDB().then(() => {
+  app.listen(PORT, () => {
+    console.log(`✔ Server running in ${process.env.NODE_ENV} mode on port ${PORT}`);
+  });
 });

@@ -5,10 +5,25 @@ export const notFound = (req, res, next) => {
 };
 
 export const errorHandler = (err, req, res, next) => {
+  // Log the error for server-side debugging (Hostinger stderr.log)
+  console.error(`[ERROR] ${req.method} ${req.url} - ${err.message}`);
+  if (process.env.NODE_ENV !== 'production') {
+    console.error(err.stack);
+  }
+
   const statusCode = res.statusCode === 200 ? 500 : res.statusCode;
-  res.status(statusCode);
-  res.json({
-    message: err.message,
-    stack: process.env.NODE_ENV === 'production' ? null : err.stack,
-  });
+  
+  // Ensure we don't crash if res.status or res.json fails
+  try {
+    res.status(statusCode).json({
+      message: err.message || 'Internal Server Error',
+      stack: process.env.NODE_ENV === 'production' ? '🥞' : err.stack,
+    });
+  } catch (sendError) {
+    console.error('CRITICAL: Failed to send error response:', sendError);
+    // Fallback to a simple text response if JSON fails
+    if (!res.headersSent) {
+      res.status(500).send('A critical error occurred.');
+    }
+  }
 };

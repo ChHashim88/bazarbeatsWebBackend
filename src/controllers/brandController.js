@@ -1,5 +1,4 @@
-import { PrismaClient } from '@prisma/client';
-const prisma = new PrismaClient();
+import prisma from '../config/db.js';
 
 // @desc    Get all brands
 // @route   GET /api/brands

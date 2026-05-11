@@ -1,12 +1,29 @@
-# DO NOT REMOVE. ALERTS ORIGIN.
-PassengerAppRoot "/home/username/public_html" # Replace with actual path if needed
+# Hostinger / Phusion Passenger Configuration
+# ---------------------------------------------------------
+# IMPORTANT: Replace 'username' in the path below with your actual 
+# Hostinger username (e.g., u123456789). 
+# You can find this in your Hostinger Panel under 'Hosting Details'.
+
+PassengerAppRoot "/home/username/public_html"
 PassengerBaseURI "/"
 PassengerAppType node
 PassengerStartupFile index.cjs
 
+# LiteSpeed Specific Rules
 <IfModule Litespeed>
-RewriteEngine On
-RewriteCond %{REQUEST_FILENAME} !-f
-RewriteCond %{REQUEST_FILENAME} !-d
-RewriteRule ^(.*)$ / [L]
+    RewriteEngine On
+    
+    # Redirect all requests to the Node.js application
+    # but ignore actual files and directories (like uploads)
+    RewriteCond %{REQUEST_FILENAME} !-f
+    RewriteCond %{REQUEST_FILENAME} !-d
+    RewriteRule ^(.*)$ / [L]
+</IfModule>
+
+# Security: Disable directory browsing
+Options -Indexes
+
+# Increase timeouts to prevent 'Connection Reset' on long DB queries
+<IfModule mod_env.c>
+    SetEnv MAGICK_THREAD_LIMIT 1
 </IfModule>
