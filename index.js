@@ -37,8 +37,11 @@ app.use('/api/messages', messageRoutes);
 app.use(notFound);
 app.use(errorHandler);
 
-const PORT = process.env.PORT || 8080;
+const PORT = process.env.PORT || 3000;
 app.listen(PORT, () => {
-  console.log('Server started on port', PORT);
-  connectDB().catch(err => console.log('DB Delayed Connect:', err.message));
+  console.log('✔ Server started on port', PORT);
+  // Background connect so it doesn't block the web server
+  setTimeout(() => {
+    connectDB().catch(err => console.log('✘ DB Delayed Connect:', err.message));
+  }, 1000);
 });
