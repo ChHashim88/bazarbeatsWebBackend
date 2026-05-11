@@ -84,6 +84,8 @@ console.log('ENV File Exists:', fs.existsSync(path.join(__dirname, '.env')));
 console.log('ENV PORT:', process.env.PORT);
 console.log('FINAL PORT:', PORT);
 console.log('DATABASE_URL Defined:', !!process.env.DATABASE_URL);
+console.log('MONGODB_URI Defined:', !!process.env.MONGODB_URI);
+console.log('MONGODB_URL Defined:', !!process.env.MONGODB_URL);
 console.log('Available ENV Keys:', Object.keys(process.env).join(', '));
 console.log('--- DIAGNOSTIC END ---');
 
