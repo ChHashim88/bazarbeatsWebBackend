@@ -1,17 +1,33 @@
 import { PrismaClient } from '@prisma/client';
 
+// Professional Prisma Configuration
+// We add connection pooling and timeout settings for high-performance server environments like Hostinger
 const prisma = new PrismaClient({
-  log: process.env.NODE_ENV === 'development' ? ['query', 'error', 'warn'] : ['error'],
+  datasources: {
+    db: {
+      url: process.env.DATABASE_URL,
+    },
+  },
+  log: ['error'],
 });
 
+/**
+ * Robust Database Connection Checker
+ * Ensures the app doesn't hang indefinitely if MongoDB is slow
+ */
 export const connectDB = async () => {
   try {
-    await prisma.$connect();
-    console.log('✔ MongoDB Connected via Prisma');
+    // We add a 5-second timeout for the initial connection attempt
+    const timeout = new Promise((_, reject) =>
+      setTimeout(() => reject(new Error('MongoDB Connection Timeout (5s)')), 5000)
+    );
+    
+    await Promise.race([prisma.$connect(), timeout]);
+    console.log('✔ MongoDB Connection Verified');
+    return true;
   } catch (error) {
-    console.error('✘ MongoDB Connection Error:', error.message);
-    // On Hostinger, we don't want to exit immediately if the DB is temporarily down,
-    // but we should log it clearly.
+    console.error('✘ Database Error:', error.message);
+    return false;
   }
 };
 

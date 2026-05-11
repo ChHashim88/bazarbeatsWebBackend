@@ -3,6 +3,10 @@ import dotenv from 'dotenv';
 import cors from 'cors';
 import helmet from 'helmet';
 import morgan from 'morgan';
+import path from 'path';
+import { fileURLToPath } from 'url';
+
+// Route Imports
 import userRoutes from './routes/userRoutes.js';
 import productRoutes from './routes/productRoutes.js';
 import categoryRoutes from './routes/categoryRoutes.js';
@@ -13,66 +17,40 @@ import settingsRoutes from './routes/settingsRoutes.js';
 import brandRoutes from './routes/brandRoutes.js';
 import messageRoutes from './routes/messageRoutes.js';
 import { notFound, errorHandler } from './middlewares/errorMiddleware.js';
-import path from 'path';
-import { fileURLToPath } from 'url';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
-// --- STABILITY BOOTSTRAP ---
-console.log("Environment Check:", {
-  NODE_ENV: process.env.NODE_ENV,
-  HAS_DB_URL: !!process.env.DATABASE_URL,
-  PORT: process.env.PORT
-});
-
-// Load .env only if not already provided by Hostinger Dashboard
+// 1. Environment Loading (Dashboard First)
 if (!process.env.DATABASE_URL) {
-  console.log("Loading variables from local .env file...");
   dotenv.config({ path: path.resolve(__dirname, '../.env') });
-} else {
-  console.log("Using Hostinger Dashboard environment variables.");
 }
-
-// --- STABILITY BOILERPLATE ---
-// 1. Validate Critical Environment Variables
-const requiredEnvs = ['DATABASE_URL', 'CLOUDINARY_CLOUD_NAME'];
-requiredEnvs.forEach(env => {
-  if (!process.env[env]) {
-    console.error(`FATAL ERROR: ${env} is not defined in .env file.`);
-  }
-});
-
-// 2. Global Error Handlers (Prevents the process from dying silently)
-process.on('uncaughtException', (err) => {
-  console.error('UNCAUGHT EXCEPTION! 💥 Shutting down...');
-  console.error(err.name, err.message, err.stack);
-  // Give the server time to log before exiting
-  setTimeout(() => process.exit(1), 1000);
-});
-
-process.on('unhandledRejection', (err) => {
-  console.error('UNHANDLED REJECTION! 💥 Shutting down...');
-  console.error(err.name, err.message, err.stack);
-  // In production, we might not want to exit for rejections, but logging is vital
-});
-// -----------------------------
 
 import { connectDB } from './config/db.js';
 
 const app = express();
 
-// Middlewares
+// 2. High-Performance Middlewares
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
-app.use(cors());
+
+// Professional CORS configuration for cross-domain stability
+app.use(cors({
+  origin: '*', // Allows all origins during initial deployment
+  methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
+  allowedHeaders: ['Content-Type', 'Authorization', 'X-Requested-With'],
+  credentials: true
+}));
+
 app.use(helmet({
   crossOriginResourcePolicy: false,
   crossOriginOpenerPolicy: false,
+  contentSecurityPolicy: false
 }));
+
 app.use(morgan('dev'));
 
-// API Routes
+// 3. API Routes
 app.use('/api/users', userRoutes);
 app.use('/api/products', productRoutes);
 app.use('/api/categories', categoryRoutes);
@@ -83,56 +61,53 @@ app.use('/api/settings', settingsRoutes);
 app.use('/api/brands', brandRoutes);
 app.use('/api/messages', messageRoutes);
 
-// Statically serve the uploads folder
-const _dirname = path.resolve();
-app.use('/uploads', express.static(path.join(_dirname, '/uploads')));
+// Static Uploads
+const _root_dir = path.resolve();
+app.use('/uploads', express.static(path.join(_root_dir, '/uploads')));
 
-// Deep Health Check Route
+// 4. Diagnostic Routes
 app.get('/health', async (req, res) => {
-  let dbStatus = 'Checking...';
-  try {
-    // Try a simple count query to see if DB is responsive
-    await prisma.user.count();
-    dbStatus = 'Connected ✔';
-  } catch (err) {
-    dbStatus = `Failed: ${err.message}`;
-  }
-
+  const isConnected = await connectDB();
   res.status(200).json({ 
-    status: 'OK', 
+    status: 'ONLINE', 
+    database: isConnected ? 'CONNECTED' : 'DISCONNECTED',
     uptime: `${Math.floor(process.uptime())}s`,
-    database: dbStatus,
     timestamp: new Date().toISOString()
   });
 });
 
 app.get('/', (req, res) => {
   res.json({
-    message: 'BazarBeats API is live',
-    version: '1.1.0',
-    env: process.env.NODE_ENV,
-    port: process.env.PORT || 5000
+    message: 'BazarBeats Professional API',
+    status: 'Ready',
+    node: process.version
   });
 });
 
-// Error Handling Middlewares
+// 5. Error Handling
 app.use(notFound);
 app.use(errorHandler);
 
+// 6. Robust Server Boot
 const PORT = process.env.PORT || 3000;
 
-// Start server immediately
 const server = app.listen(PORT, () => {
-  console.log(`✔ Server running in ${process.env.NODE_ENV} mode on port ${PORT}`);
+  console.log(`✔ PROD Server running on Port ${PORT}`);
   
-  // Isolated Database Connection
+  // Background DB check
   setTimeout(() => {
-    connectDB().catch(err => {
-      console.error('✘ Background MongoDB Error:', err.message);
-    });
-  }, 1000);
+    connectDB();
+  }, 2000);
 });
 
-// Handle graceful shutdowns
-process.on('SIGTERM', () => server.close(() => process.exit(0)));
-process.on('SIGINT', () => server.close(() => process.exit(0)));
+// Graceful Exit
+const shutdown = () => {
+  console.log('Shutting down server...');
+  server.close(() => {
+    console.log('Server terminated.');
+    process.exit(0);
+  });
+};
+
+process.on('SIGTERM', shutdown);
+process.on('SIGINT', shutdown);
