@@ -5,14 +5,16 @@ export const notFound = (req, res, next) => {
 };
 
 export const errorHandler = (err, req, res, next) => {
+  const statusCode = res.statusCode === 200 ? 500 : res.statusCode;
+  
   // Log the error for server-side debugging (Hostinger stderr.log)
   console.error(`[ERROR] ${req.method} ${req.url} - ${err.message}`);
-  if (process.env.NODE_ENV !== 'production') {
+  
+  // Always log the stack trace for 500 errors to help diagnose crashes
+  if (statusCode === 500 || process.env.NODE_ENV !== 'production') {
     console.error(err.stack);
   }
 
-  const statusCode = res.statusCode === 200 ? 500 : res.statusCode;
-  
   // Ensure we don't crash if res.status or res.json fails
   try {
     res.status(statusCode).json({
