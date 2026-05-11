@@ -2,9 +2,13 @@ import express from 'express';
 import cors from 'cors';
 import dotenv from 'dotenv';
 import path from 'path';
+import fs from 'fs';
+import { fileURLToPath } from 'url';
 
-// 1. Initialize Environment Variables
-dotenv.config();
+// 1. Initialize Environment Variables with Explicit Path
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
+dotenv.config({ path: path.join(__dirname, '.env') });
 
 const app = express();
 app.use(cors());
@@ -75,8 +79,11 @@ const PORT = process.env.PORT || 3000;
 console.log('--- DIAGNOSTIC START ---');
 console.log('Time:', new Date().toISOString());
 console.log('CWD:', process.cwd());
+console.log('Dirname:', __dirname);
+console.log('ENV File Exists:', fs.existsSync(path.join(__dirname, '.env')));
 console.log('ENV PORT:', process.env.PORT);
 console.log('FINAL PORT:', PORT);
+console.log('DATABASE_URL Defined:', !!process.env.DATABASE_URL);
 console.log('NODE_ENV:', process.env.NODE_ENV);
 console.log('--- DIAGNOSTIC END ---');
 
