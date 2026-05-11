@@ -19,7 +19,7 @@ export const connectDB = async () => {
   try {
     // We add a 5-second timeout for the initial connection attempt
     const timeout = new Promise((_, reject) =>
-      setTimeout(() => reject(new Error('MongoDB Connection Timeout (5s)')), 5000)
+      setTimeout(() => reject(new Error('MongoDB Connection Timeout (30s)')), 30000)
     );
     
     await Promise.race([prisma.$connect(), timeout]);
