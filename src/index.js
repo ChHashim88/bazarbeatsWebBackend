@@ -89,9 +89,12 @@ app.use(errorHandler);
 
 const PORT = process.env.PORT || 5000;
 
-// Connect to Database and then start server
-connectDB().then(() => {
-  app.listen(PORT, () => {
-    console.log(`✔ Server running in ${process.env.NODE_ENV} mode on port ${PORT}`);
+// Start server immediately
+app.listen(PORT, () => {
+  console.log(`✔ Server running in ${process.env.NODE_ENV} mode on port ${PORT}`);
+  
+  // Connect to Database in the background
+  connectDB().catch(err => {
+    console.error('✘ Delayed MongoDB Connection Error:', err.message);
   });
 });
